@@ -121,7 +121,7 @@ namespace hpx { namespace naming
         boost::uint16_t get_port() const { return port_; }
         parcelset::connection_type get_type() const
         {
-            return parcelset::connection_tcpip;
+            return parcelset::connection_portals;
         }
 
     private:

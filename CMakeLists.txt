@@ -335,6 +335,20 @@ if(HPX_USE_PARCELPORT_IBVERBS)
   endif()
 endif()
 
+###############################################################################
+# Portals4 Transport
+################################################################################
+hpx_option(HPX_USE_PARCELPORT_PORTALS BOOL "Enable parcelport based on Portals 4 (default: OFF)." OFF ADVANCED)
+if(HPX_USE_PARCELPORT_PORTALS)
+  find_package(HPX_Portals)
+  if(PORTALS_FOUND)
+    hpx_include_sys_directories(${PORTALS_INCLUDE_DIR})
+    hpx_link_sys_directories(${PORTALS_LIBRARY_DIR})
+    hpx_add_definitions(-DHPX_HAVE_PARCELPORT_PORTALS)
+    set(hpx_LIBRARIES ${hpx_LIBRARIES} ${PORTALS_LIBRARY})
+  endif()
+endif()
+
 ################################################################################
 # Logging configuration
 ################################################################################

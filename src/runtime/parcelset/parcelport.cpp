@@ -6,6 +6,9 @@
 
 #include <hpx/hpx_fwd.hpp>
 #include <hpx/runtime/parcelset/tcp/parcelport.hpp>
+#if defined(HPX_HAVE_PARCELPORT_PORTALS)
+#  include <hpx/runtime/parcelset/portals/parcelport.hpp>
+#endif
 #if defined(HPX_HAVE_PARCELPORT_SHMEM)
 #  include <hpx/runtime/parcelset/shmem/parcelport.hpp>
 #endif
@@ -83,9 +86,23 @@ namespace hpx { namespace parcelset
                 "unsupported connection type 'connection_ibverbs'");
             break;
 
-        case connection_portals4:
+        case connection_portals:
+#if defined(HPX_HAVE_PARCELPORT_PORTALS)
+            {
+                // Create Portals 4 parcelport only if allowed by the
+                // configuration info.
+                std::string enable_portals =
+                    cfg.get_entry("hpx.parcel.portals.enable", "0");
+
+                if (boost::lexical_cast<int>(enable_portals))
+                {
+                    return boost::make_shared<parcelset::portals::parcelport>(
+                        cfg, on_start_thread, on_stop_thread);
+                }
+            }
+#endif
             HPX_THROW_EXCEPTION(bad_parameter, "parcelport::create",
-                "unsupported connection type 'connection_portals4'");
+                "unsupported connection type 'connection_portals'");
             break;
 
         case connection_mpi:

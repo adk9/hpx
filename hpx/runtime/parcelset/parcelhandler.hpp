@@ -339,7 +339,7 @@ namespace hpx { namespace parcelset
         /// this parcelhandler is associated with.
         naming::locality const& here() const
         {
-            return find_parcelport(connection_tcpip)->here();
+            return find_parcelport(connection_portals)->here();
         }
 
         ///////////////////////////////////////////////////////////////////////

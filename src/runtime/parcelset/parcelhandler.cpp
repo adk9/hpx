@@ -52,8 +52,8 @@ namespace hpx { namespace parcelset
         case connection_ibverbs:
           return "ibverbs";
 
-        case connection_portals4:
-            return "portals4";
+        case connection_portals:
+            return "portals";
 
         case connection_mpi:
             return "mpi";
@@ -75,8 +75,8 @@ namespace hpx { namespace parcelset
         if (!std::strcmp(t.c_str(), "ibverbs"))
             return connection_ibverbs;
 
-        if (!std::strcmp(t.c_str(), "portals4"))
-            return connection_portals4;
+        if (!std::strcmp(t.c_str(), "portals"))
+            return connection_portals;
 
         if (!std::strcmp(t.c_str(), "mpi"))
             return connection_mpi;
@@ -322,6 +322,18 @@ namespace hpx { namespace parcelset
             {
                 if (pports_[connection_ibverbs])
                     return connection_ibverbs;
+            }
+        }
+#endif
+#if defined(HPX_HAVE_PARCELPORT_PORTALS)
+        if (dest.get_type() == connection_tcpip) {
+            std::string enable_portals =
+                get_config_entry("hpx.parcel.portals.enable", "0");
+            if (use_alternative_parcelports_ && 
+                boost::lexical_cast<int>(enable_portals))
+            {
+                if (pports_[connection_portals])
+                    return connection_portals;
             }
         }
 #endif
