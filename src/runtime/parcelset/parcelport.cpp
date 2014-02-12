@@ -1,5 +1,6 @@
 //  Copyright (c) 2007-2014 Hartmut Kaiser
 //  Copyright (c) 2013-2014 Thomas Heller
+//  Copyright (c)      2014 Abhishek Kulkarni
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,6 +27,11 @@
 #include <hpx/runtime/parcelset/policies/ibverbs/connection_handler.hpp>
 #include <hpx/runtime/parcelset/policies/ibverbs/receiver.hpp>
 #include <hpx/runtime/parcelset/policies/ibverbs/sender.hpp>
+#endif
+#if defined(HPX_HAVE_PARCELPORT_PORTALS4)
+#include <hpx/runtime/parcelset/policies/portals4/connection_handler.hpp>
+#include <hpx/runtime/parcelset/policies/portals4/receiver.hpp>
+#include <hpx/runtime/parcelset/policies/portals4/sender.hpp>
 #endif
 #if defined(HPX_HAVE_PARCELPORT_MPI)
 #include <hpx/runtime/parcelset/policies/mpi/connection_handler.hpp>
@@ -82,8 +88,12 @@ namespace hpx { namespace parcelset
               , false);
 #endif
             break;
-
         case connection_portals4:
+#if defined(HPX_HAVE_PARCELPORT_PORTALS4)
+            return return_type(
+                policies::portals4::connection_handler::runtime_configuration()
+              , false);
+#endif
             break;
 
         case connection_mpi:
@@ -163,6 +173,20 @@ namespace hpx { namespace parcelset
             break;
 
         case connection_portals4:
+#if defined(HPX_HAVE_PARCELPORT_PORTALS4)
+            {
+                // Create portals4 based parcelport only if allowed by the
+                // configuration info.
+                std::string enable_portals4 =
+                    cfg.get_entry("hpx.parcel.portals4.enable", "0");
+
+                if (boost::lexical_cast<int>(enable_portals4))
+                {
+                    return boost::make_shared<policies::portals4::connection_handler>(
+                        cfg, on_start_thread, on_stop_thread);
+                }
+            }
+#endif
             HPX_THROW_EXCEPTION(bad_parameter, "parcelport::create",
                 "unsupported connection type 'connection_portals4'");
             break;

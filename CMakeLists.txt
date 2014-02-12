@@ -4,6 +4,7 @@
 # Copyright (c)      2011 Bryce Lelbach
 # Copyright (c)      2011 Vinay C Amatya
 # Copyright (c)      2013 Jeroen Habraken
+# Copyright (c)      2014 Abhishek Kulkarni
 #
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -407,6 +408,20 @@ if(HPX_HAVE_PARCELPORT_MPI)
         "HPX_HAVE_PARCELPORT_MPI is set but MPI could not be found. "
         "Please set MPI_CXX_COMPILER, MPI_C_COMPILER, and "
         "MPI_Fortran_COMPILER to the appropraite MPI compiler wrappers")
+  endif()
+endif()
+
+###############################################################################
+# Portals4 Transport
+################################################################################
+hpx_option(HPX_USE_PARCELPORT_PORTALS4 BOOL "Enable parcelport based on Portals 4 (default: OFF)." OFF ADVANCED)
+if(HPX_USE_PARCELPORT_PORTALS4)
+  find_package(HPX_Portals)
+  if(PORTALS_FOUND)
+    hpx_include_sys_directories(${PORTALS_INCLUDE_DIR})
+    hpx_link_sys_directories(${PORTALS_LIBRARY_DIR})
+    hpx_add_config_define(HPX_HAVE_PARCELPORT_PORTALS4)
+    set(hpx_LIBRARIES ${hpx_LIBRARIES} ${PORTALS_LIBRARY})
   endif()
 endif()
 

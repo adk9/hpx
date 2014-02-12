@@ -2,6 +2,7 @@
 //  Copyright (c) 2013-2014 Thomas Heller
 //  Copyright (c) 2007      Richard D Guidry Jr
 //  Copyright (c) 2011      Bryce Lelbach & Katelyn Kufahl
+//  Copyright (c) 2014      Abhishek Kulkarni
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -279,6 +280,16 @@ namespace hpx { namespace parcelset
                 pool->get_on_start_thread(), pool->get_on_stop_thread()));
         }
 #endif
+#if defined(HPX_HAVE_PARCELPORT_PORTALS4)
+        std::string enable_portals4 =
+            get_config_entry("hpx.parcel.portals4.enable", "0");
+
+        if (boost::lexical_cast<int>(enable_portals4)) {
+            attach_parcelport(parcelport::create(
+                connection_portals4, hpx::get_config(),
+                pool->get_on_start_thread(), pool->get_on_stop_thread()));
+        }
+#endif
 #if defined(HPX_HAVE_PARCELPORT_MPI)
         if(tcp_bootstrap)
         {
@@ -443,6 +454,18 @@ namespace hpx { namespace parcelset
             {
                 if (pports_[connection_ibverbs])
                     return connection_ibverbs;
+            }
+        }
+#endif
+#if defined(HPX_HAVE_PARCELPORT_PORTALS4)
+        if (dest.get_type() == connection_tcp) {
+            std::string enable_portals4 =
+                get_config_entry("hpx.parcel.portals4.enable", "0");
+            if (use_alternative_parcelports_ &&
+                boost::lexical_cast<int>(enable_portals4))
+            {
+                if (pports_[connection_portals4])
+                    return connection_portals4;
             }
         }
 #endif
